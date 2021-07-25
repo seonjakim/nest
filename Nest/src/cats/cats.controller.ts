@@ -22,34 +22,49 @@ export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Get()
-  getAllCat() {
+  getCurrentCat() {
     return 'all cat';
   }
 
-  @Get(':id')
-  getOneCat(@Param('id', ParseIntPipe) param) {
-    console.log(param);
-    console.log(typeof param);
-    return 'one cat';
-  }
-
   @Post()
-  createCat() {
+  async signUp() {
     return 'create cat';
   }
 
-  @Put(':id')
-  updateCat() {
-    return 'update cat';
+  @Post('login')
+  logIn() {
+    return 'login';
   }
 
-  @Patch(':id')
-  updatePartialCat() {
-    return 'update';
+  @Post('logout')
+  logOut() {
+    return 'logout';
   }
 
-  @Delete(':id')
-  deleteCat() {
-    return 'delete';
+  @Post('upload/cats')
+  uploadCatImg() {
+    return 'uploadImg';
   }
+
+  // @Get(':id')
+  // getOneCat(@Param('id', ParseIntPipe) param) {
+  //   console.log(param);
+  //   console.log(typeof param);
+  //   return 'one cat';
+  // }
+
+  // @Put(':id')
+  // updateCat() {
+  //   return 'update cat';
+  // }
+
+  // @Patch(':id')
+  // updatePartialCat() {
+  //   return 'update';
+  // }
+
+  // @Delete(':id')
+  // deleteCat() {
+  //   return 'delete';
+  // }
 }
