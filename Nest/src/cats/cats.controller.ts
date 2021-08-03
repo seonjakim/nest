@@ -11,10 +11,15 @@ import {
   Body,
   UseFilters,
   UseInterceptors,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { ReadOnlyCatDto } from 'src/dto/cat.dto';
@@ -30,9 +35,11 @@ export class CatsController {
     private readonly authService: AuthService,
   ) {}
 
+  @ApiOperation({ summary: 'get current cat info' })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getCurrentCat() {
-    return 'all cat';
+  getCurrentCat(@CurrentUser() cat) {
+    return cat.readOnlyData;
   }
 
   @ApiResponse({
@@ -54,11 +61,6 @@ export class CatsController {
   @Post('login')
   logIn(@Body() data: LoginRequestDto) {
     return this.authService.jwtLogIn(data);
-  }
-
-  @Post('logout')
-  logOut() {
-    return 'logout';
   }
 
   @Post('upload/cats')
