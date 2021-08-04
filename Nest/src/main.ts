@@ -3,11 +3,22 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { SwaggerModule, DocumentBuilder, OpenAPIObject } from '@nestjs/swagger';
+import * as expressBasicAuth from 'express-basic-auth';
+import { SWAGGER_USER, SWAGGER_PASSWORD } from './config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.use(
+    ['/docs', '/docs-json'],
+    expressBasicAuth({
+      challenge: true,
+      users: {
+        [SWAGGER_USER]: SWAGGER_PASSWORD,
+      },
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('C.I.C')
