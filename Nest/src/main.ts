@@ -5,9 +5,11 @@ import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { SwaggerModule, DocumentBuilder, OpenAPIObject } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
 import { SWAGGER_USER, SWAGGER_PASSWORD } from './config';
+import * as path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.use(
@@ -19,6 +21,9 @@ async function bootstrap() {
       },
     }),
   );
+  app.useStaticAssets(path.join(__dirname, './common', 'uploads'), {
+    prefix: '/media',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('C.I.C')

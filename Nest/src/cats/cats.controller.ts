@@ -13,7 +13,9 @@ import {
   UseInterceptors,
   UseGuards,
   Req,
+  UploadedFiles,
 } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
@@ -22,8 +24,10 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { multerOptions } from 'src/common/utils/multer.options';
 import { ReadOnlyCatDto } from 'src/dto/cat.dto';
 import { CatRequestDto } from 'src/dto/cats.request.dto';
+import { Cat } from './cats.schema';
 import { CatsService } from './cats.service';
 
 @Controller('cats')
@@ -63,9 +67,15 @@ export class CatsController {
     return this.authService.jwtLogIn(data);
   }
 
-  @Post('upload/cats')
-  uploadCatImg() {
-    return 'uploadImg';
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
+  @UseGuards(JwtAuthGuard)
+  uploadCatImg(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentUser() cat: Cat,
+  ) {
+    console.log(files);
+    return this.catsService.uploadImg(cat, files);
   }
 
   // @Get(':id')
